@@ -1,12 +1,15 @@
 ﻿<div align="center">
 
-# 📒 Sổ Thu Chi Cá Nhân
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:3776AB,100:22c55e&height=200&section=header&text=Sổ%20Thu%20Chi%20Cá%20Nhân&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Luyện%20Python%20qua%20một%20việc%20quen%20thuộc%3A%20ghi%20thu%20chi%2C%20xem%20số%20dư&descAlignY=58&descSize=18" />
 
-**Một dự án nhỏ luyện Python bằng việc quen thuộc: ghi lại tiền vào, tiền ra, rồi xem cuối cùng còn bao nhiêu.**
-s
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)
-![Status](https://img.shields.io/badge/status-đang%20phát%20triển-yellow?style=flat-square)
-![Platform](https://img.shields.io/badge/chạy%20trên-Terminal-lightgrey?style=flat-square)
+<img src="https://readme-typing-svg.demolab.com/?font=Fira+Code&weight=600&size=20&duration=3000&pause=800&color=22C55E&center=true&vCenter=true&width=600&lines=Th%C3%AAm+giao+d%E1%BB%8Bch+%E2%86%92+Xem+danh+s%C3%A1ch;T%C3%ADnh+t%E1%BB%95ng+thu+%E2%86%92+T%E1%BB%95ng+chi+%E2%86%92+S%E1%BB%91+d%C6%B0;M%E1%BB%99t+d%E1%BB%B1+%C3%A1n+nh%E1%BB%8F+c%E1%BA%ADp+nh%E1%BA%ADt+m%E1%BB%97i+tu%E1%BA%A7n" alt="Typing SVG" />
+
+<br>
+
+[![Python](https://img.shields.io/badge/Python-3-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Terminal](https://img.shields.io/badge/Chạy%20trên-Terminal-lightgrey?style=for-the-badge&logo=windowsterminal&logoColor=white)](#-chạy-thử)
+[![Status](https://img.shields.io/badge/Trạng%20thái-Đang%20phát%20triển-f59e0b?style=for-the-badge)](#-tiến-độ)
+[![Author](https://img.shields.io/badge/Author-Huỳnh%20Khiêm-e11d48?style=for-the-badge&logo=github&logoColor=white)](#)
 
 </div>
 
@@ -68,5 +71,7 @@ Sau khi chạy, bạn sẽ thấy menu với các lựa chọn:
 
 Dự án này được làm để vừa học Python vừa có một sản phẩm nhỏ cập nhật qua từng tuần.
 Mọi góp ý đều rất được hoan nghênh! 💬
+
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:22c55e,100:3776AB&height=120&section=footer" />
 
 </div>
