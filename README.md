@@ -1,40 +1,46 @@
-﻿# Du an Python: So thu chi ca nhan
+﻿# 📒 Sổ thu chi cá nhân
 
-Phien ban dau la chuong trinh chay trong terminal, phu hop de luyen Python co ban. Chuong trinh cho phep nhap khoan thu/chi, xem danh sach va tinh tong thu, tong chi, so du.
+> Một dự án nhỏ mình làm để luyện Python bằng một việc khá quen thuộc: ghi lại tiền vào, tiền ra, rồi xem cuối cùng còn bao nhiêu.
 
-## Can chuan bi
+Chương trình hiện chạy ngay trong terminal, chưa cần giao diện hay cài thêm thư viện. Mình sẽ bổ sung tính năng theo những phần Python học được trên lớp.
 
-- Python 3
+## Làm được gì rồi?
 
-## Cach chay tren Windows
+- Thêm một khoản thu hoặc chi.
+- Ghi số tiền, danh mục và ghi chú.
+- Xem lại các giao dịch đã nhập.
+- Tính tổng thu, tổng chi và số dư.
+- Báo khi nhập số tiền không hợp lệ.
 
-Mo PowerShell trong thu muc du an va chay:
+## Chạy thử
+
+Cần cài Python 3. Mở PowerShell tại thư mục dự án và chạy:
 
 ```powershell
 py app.py
 ```
 
-Neu may ban dung lenh `python` duoc thi co the chay `python app.py`.
+Nếu máy bạn nhận lệnh `python`, có thể dùng `python app.py`.
 
-## Cach su dung
+## Dùng chương trình
 
-1. Chon `1` de them giao dich, sau do chon thu hoac chi.
-2. Nhap so tien, danh muc va ghi chu neu co.
-3. Chon `2` de xem cac giao dich da nhap.
-4. Chon `3` de xem tong thu, tong chi va so du.
-5. Chon `0` de thoat.
+Trong menu, chọn:
 
-## Luu y
+- `1` để thêm giao dịch
+- `2` để xem danh sách
+- `3` để xem tổng kết
+- `0` để thoát
 
-Day la phien ban hoc Python co ban. Du lieu hien duoc giu trong bo nho khi chuong trinh dang chay va se mat khi thoat. Buoc tiep theo la hoc doc/ghi file de luu giao dich sau moi lan chay.
+Ví dụ: chọn `1`, chọn khoản chi, nhập `50000`, danh mục `Ăn uống`, rồi xem khoản đó xuất hiện trong danh sách và tổng kết.
 
-## Dua len GitHub
+## Tiến độ
 
-```powershell
-git init
-git add app.py README.md .gitignore
-git commit -m "Tao chuong trinh so thu chi bang Python"
-git branch -M main
-git remote add origin <URL-repository-cua-ban>
-git push -u origin main
-```
+Đây mới là bản đầu tiên. Các khoản giao dịch đang được giữ trong bộ nhớ, nên sẽ mất khi thoát chương trình. Phần mình muốn làm tiếp là lưu dữ liệu vào file để mở lại chương trình vẫn xem được lịch sử.
+
+## Mã nguồn
+
+- `app.py` — chương trình chính
+- `requirements.txt` — hiện không cần cài thư viện ngoài
+- `.gitignore` — các file Git bỏ qua
+
+Mình làm dự án này để vừa học Python vừa có một sản phẩm nhỏ để cập nhật qua từng tuần. Nếu có góp ý, mình rất sẵn lòng nghe!
