@@ -340,6 +340,21 @@ Một số ý tưởng cho các lần cập nhật sau:
 - [ ] Thống kê chi tiêu theo từng danh mục.
 - [ ] Hiển thị biểu đồ thu chi theo tháng.
 - [ ] Thêm một vài kiểm thử tự động khi đã học đến phần kiểm thử.
+- [ ] Nghiên cứu tích hợp Nanobot để hỗ trợ thao tác với sổ thu chi bằng ngôn ngữ tự nhiên.
+
+## 🤖 Định hướng tích hợp Nanobot
+
+Mình dự định nghiên cứu tích hợp [Nanobot](https://github.com/HKUDS/nanobot) với dự án Sổ Thu Chi để thử nghiệm cách dùng trợ lý AI hỗ trợ quản lý thu chi. Đây là **kế hoạch phát triển trong tương lai**, chưa phải tính năng đã hoàn thành.
+
+Một số chức năng có thể xem xét:
+
+- [ ] Hỏi Nanobot về tổng thu, tổng chi và số dư theo tháng.
+- [ ] Yêu cầu xem các giao dịch theo ngày hoặc danh mục.
+- [ ] Hỗ trợ thêm giao dịch hoặc đặt ngân sách sau khi người dùng xác nhận.
+- [ ] Giữ dữ liệu thu chi trên máy, không tự ý gửi dữ liệu cá nhân đến dịch vụ bên ngoài.
+
+Khi triển khai, cần thiết kế một lớp kết nối rõ ràng giữa Nanobot và ứng dụng Python, kiểm tra dữ liệu đầu vào và yêu cầu xác nhận trước khi ghi thay đổi vào sổ thu chi. Việc tích hợp cũng cần được kiểm thử riêng để tránh làm ảnh hưởng các chức năng hiện có.
+
 
 ## 🎤 Gợi ý trình bày
 
