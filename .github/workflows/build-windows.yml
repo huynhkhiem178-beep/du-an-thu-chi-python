@@ -1,0 +1,63 @@
+name: Build Windows app
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "gui.py"
+      - "SoThuChi.spec"
+      - ".github/workflows/build-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyInstaller
+        run: python -m pip install --upgrade pip pyinstaller
+
+      - name: Build standalone desktop app
+        run: >-
+          python -m PyInstaller
+          --clean
+          --noconfirm
+          --windowed
+          --onedir
+          --name SoThuChi
+          --hidden-import=_tkinter
+          gui.py
+
+      - name: Verify required Tkinter extension exists
+        shell: pwsh
+        run: |
+          $found = Get-ChildItem -Path "dist/SoThuChi" -Recurse -Filter "_tkinter*.pyd"
+          if (-not $found) {
+            Write-Error "The packaged app does not contain the _tkinter extension."
+            exit 1
+          }
+          $found | ForEach-Object { Write-Host $_.FullName }
+
+      - name: Package app as ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/SoThuChi" -DestinationPath "SoThuChi-Windows.zip" -Force
+
+      - name: Upload downloadable ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoThuChi-Windows
+          path: SoThuChi-Windows.zip
+          if-no-files-found: error
+          retention-days: 30
