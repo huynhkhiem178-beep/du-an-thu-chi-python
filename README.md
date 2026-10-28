@@ -321,6 +321,11 @@ Các hàm chính trong `app.py`:
 ├── tests/
 │   └── test_app.py           # Kiểm thử tự động bằng pytest
 ├── requirements-dev.txt     # Thư viện chỉ dùng khi phát triển
+├── docs/
+│   └── DEVELOPMENT.md       # Ghi chú phát triển và an toàn dữ liệu
+├── .github/workflows/
+│   ├── build-windows.yml    # Đóng gói ứng dụng Windows
+│   └── tests.yml            # Chạy kiểm thử tự động
 ├── transactions.json        # Dữ liệu cá nhân, được Git bỏ qua
 ├── monthly_budgets.json     # Hạn mức chi cá nhân, được Git bỏ qua
 ├── README.md                # Mô tả và hướng dẫn
