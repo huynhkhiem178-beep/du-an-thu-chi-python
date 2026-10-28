@@ -1,6 +1,8 @@
 ﻿# So thu chi ca nhan - ung dung terminal bang Python
 import json
+import os
 import sys
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -13,52 +15,144 @@ BUDGETS_FILE = APP_DIR / "monthly_budgets.json"
 monthly_budgets = {}
 
 
+def validate_month(month):
+    """Return True when month uses the YYYY-MM format and is a real month."""
+    if not isinstance(month, str) or len(month) != 7 or month[4] != "-":
+        return False
+    try:
+        date.fromisoformat(month + "-01")
+        return True
+    except ValueError:
+        return False
+
+
+def validate_transaction(item):
+    """Validate one saved transaction and return a safe, normalized copy."""
+    if not isinstance(item, dict):
+        return None
+
+    kind = item.get("kind")
+    amount = item.get("amount")
+    category = item.get("category")
+    day = item.get("day")
+    note = item.get("note", "")
+
+    if kind not in ("Thu", "Chi"):
+        return None
+    if isinstance(amount, bool) or not isinstance(amount, int) or amount <= 0:
+        return None
+    if not isinstance(category, str) or not category.strip():
+        return None
+    if not isinstance(day, str):
+        return None
+    try:
+        date.fromisoformat(day)
+    except ValueError:
+        return None
+    if not isinstance(note, str):
+        note = str(note) if note is not None else ""
+
+    return {
+        "kind": kind,
+        "amount": amount,
+        "category": category.strip(),
+        "day": day,
+        "note": note.strip(),
+    }
+
+
+def _atomic_write_json(path, data):
+    """Write JSON to a temporary file first to reduce the risk of data loss."""
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as file:
+            temporary_path = Path(file.name)
+            json.dump(data, file, ensure_ascii=False, indent=4)
+            file.write("\n")
+        os.replace(temporary_path, path)
+        return True
+    except (OSError, TypeError, ValueError) as error:
+        print(f"Không thể lưu dữ liệu tại {path}: {error}")
+        if temporary_path is not None:
+            try:
+                if temporary_path.exists():
+                    temporary_path.unlink()
+            except OSError:
+                pass
+        return False
+
+
 def load_transactions():
-    """Doc giao dich tu file JSON neu file da ton tai."""
+    """Read and validate transactions from the local JSON file."""
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as file:
             saved_transactions = json.load(file)
-        if isinstance(saved_transactions, list):
-            return [item for item in saved_transactions if isinstance(item, dict)]
-        print("File du lieu khong dung dinh dang.")
     except FileNotFoundError:
         return []
-    except json.JSONDecodeError:
-        print("Khong doc duoc file JSON. Bat dau voi danh sach rong.")
-    return []
+    except (json.JSONDecodeError, OSError) as error:
+        print(f"Không đọc được file giao dịch ({error}). Dữ liệu chưa được ghi đè.")
+        return []
+
+    if not isinstance(saved_transactions, list):
+        print("File giao dịch không đúng định dạng danh sách. Dữ liệu chưa được ghi đè.")
+        return []
+
+    valid_transactions = []
+    invalid_count = 0
+    for item in saved_transactions:
+        normalized = validate_transaction(item)
+        if normalized is None:
+            invalid_count += 1
+        else:
+            valid_transactions.append(normalized)
+
+    if invalid_count:
+        print(
+            f"Cảnh báo: bỏ qua {invalid_count} giao dịch không hợp lệ khi nạp. "
+            "File gốc vẫn được giữ nguyên."
+        )
+    return valid_transactions
 
 
 def save_transactions():
-    """Luu danh sach giao dich vao file JSON."""
-    try:
-        with open(DATA_FILE, "w", encoding="utf-8") as file:
-            json.dump(transactions, file, ensure_ascii=False, indent=4)
-    except OSError:
-        print("Khong the ghi file. Giao dich chi duoc giu trong phien nay.")
+    """Save the current transaction list without partially overwriting the file."""
+    return _atomic_write_json(DATA_FILE, transactions)
 
 
 def load_budgets():
-    """Doc ngan sach theo thang tu file JSON."""
+    """Read and validate monthly budgets from the local JSON file."""
     try:
         with open(BUDGETS_FILE, "r", encoding="utf-8") as file:
             saved_budgets = json.load(file)
-        if isinstance(saved_budgets, dict):
-            return saved_budgets
-        print("File ngan sach khong dung dinh dang.")
     except FileNotFoundError:
         return {}
-    except json.JSONDecodeError:
-        print("Khong doc duoc file ngan sach JSON. Bat dau voi ngan sach rong.")
-    return {}
+    except (json.JSONDecodeError, OSError) as error:
+        print(f"Không đọc được file ngân sách ({error}). Dữ liệu chưa được ghi đè.")
+        return {}
+
+    if not isinstance(saved_budgets, dict):
+        print("File ngân sách không đúng định dạng. Dữ liệu chưa được ghi đè.")
+        return {}
+
+    valid_budgets = {}
+    for month, amount in saved_budgets.items():
+        if validate_month(month) and isinstance(amount, int) and not isinstance(amount, bool) and amount > 0:
+            valid_budgets[month] = amount
+    if len(valid_budgets) != len(saved_budgets):
+        print("Cảnh báo: một số ngân sách không hợp lệ đã bị bỏ qua.")
+    return valid_budgets
 
 
 def save_budgets():
-    """Luu cac ngan sach theo thang vao file JSON."""
-    try:
-        with open(BUDGETS_FILE, "w", encoding="utf-8") as file:
-            json.dump(monthly_budgets, file, ensure_ascii=False, indent=4)
-    except OSError:
-        print("Khong the ghi file ngan sach.")
+    """Save monthly budgets atomically."""
+    return _atomic_write_json(BUDGETS_FILE, monthly_budgets)
 
 
 def add_transaction():

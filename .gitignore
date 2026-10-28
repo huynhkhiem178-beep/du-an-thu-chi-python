@@ -1,7 +1,16 @@
-﻿.venv/
+.venv/
 __pycache__/
 *.py[cod]
 expenses.db
 .env
 transactions.json
 monthly_budgets.json
+
+# Python testing and local build output
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.tmp
+*.log
