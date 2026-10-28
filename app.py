@@ -75,14 +75,15 @@ def _atomic_write_json(path, data):
         ) as file:
             temporary_path = Path(file.name)
             json.dump(data, file, ensure_ascii=False, indent=4)
-            file.write("\\n")
+            file.write("\n")
         os.replace(temporary_path, path)
         return True
     except (OSError, TypeError, ValueError) as error:
         print(f"Không thể lưu dữ liệu tại {path}: {error}")
         if temporary_path is not None:
             try:
-                temporary_path.unlink(missing_ok=True)
+                if temporary_path.exists():
+                    temporary_path.unlink()
             except OSError:
                 pass
         return False
