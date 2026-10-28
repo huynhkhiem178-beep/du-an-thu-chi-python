@@ -111,3 +111,43 @@ def test_save_budgets_writes_json(tmp_path, monkeypatch):
 
     assert app.save_budgets() is True
     assert json.loads(budget_file.read_text(encoding="utf-8")) == {"2026-09": 250000}
+
+
+"""Additional failure-path tests for the Sổ Thu Chi storage helpers."""
+
+import json
+
+import app
+
+
+def test_failed_atomic_write_preserves_existing_file(tmp_path, monkeypatch):
+    target = tmp_path / "transactions.json"
+    original = '[{"kind": "Thu"}]'
+    target.write_text(original, encoding="utf-8")
+
+    def fail_replace(_source, _destination):
+        raise OSError("simulated disk error")
+
+    monkeypatch.setattr(app.os, "replace", fail_replace)
+    assert app._atomic_write_json(target, [{"kind": "Chi"}]) is False
+    assert target.read_text(encoding="utf-8") == original
+    assert list(tmp_path.glob("*.tmp")) == []
+
+
+def test_load_budgets_handles_malformed_json_without_overwriting(tmp_path, monkeypatch):
+    target = tmp_path / "monthly_budgets.json"
+    original = "{invalid"
+    target.write_text(original, encoding="utf-8")
+    monkeypatch.setattr(app, "BUDGETS_FILE", target)
+
+    assert app.load_budgets() == {}
+    assert target.read_text(encoding="utf-8") == original
+
+
+def test_sample_transactions_are_valid():
+    from pathlib import Path
+
+    sample_path = Path(__file__).resolve().parents[1] / "sample_transactions.json"
+    records = json.loads(sample_path.read_text(encoding="utf-8"))
+    assert len(records) == 9
+    assert all(app.validate_transaction(record) is not None for record in records)
