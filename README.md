@@ -42,7 +42,7 @@ Giao dịch và ngân sách được lưu trên máy bằng các file JSON. Khi 
 
 ### Yêu cầu
 
-- Python 3.7 trở lên.
+- Python 3.8 trở lên.
 - Windows, macOS hoặc Linux có terminal.
 - Không cần cài Flask hay thư viện bên ngoài.
 
@@ -315,14 +315,37 @@ Các hàm chính trong `app.py`:
 
 ```
 .
-├── app.py                   # Mã nguồn ứng dụng
+├── app.py                   # Phiên bản terminal và lớp lưu dữ liệu
 ├── gui.py                   # Giao diện desktop Tkinter
 ├── sample_transactions.json # Bộ dữ liệu giả lập để thực hành
+├── tests/
+│   └── test_app.py           # Kiểm thử tự động bằng pytest
+├── requirements-dev.txt     # Thư viện chỉ dùng khi phát triển
 ├── transactions.json        # Dữ liệu cá nhân, được Git bỏ qua
 ├── monthly_budgets.json     # Hạn mức chi cá nhân, được Git bỏ qua
 ├── README.md                # Mô tả và hướng dẫn
 └── .gitignore               # Danh sách file Git bỏ qua
 ```
+
+## 🧪 Kiểm thử tự động
+
+Dự án có một bộ kiểm thử dùng `pytest` để kiểm tra việc xác thực dữ liệu giao dịch, định dạng tháng, đọc file JSON và lưu dữ liệu. Đây là công cụ phát triển tùy chọn; ứng dụng bình thường vẫn dùng thư viện có sẵn của Python.
+
+Cài thư viện kiểm thử:
+
+```powershell
+py -m pip install -r requirements-dev.txt
+```
+
+Chạy kiểm thử từ thư mục gốc của dự án:
+
+```powershell
+py -m pytest -q
+```
+
+GitHub Actions cũng tự chạy các kiểm thử này khi có thay đổi liên quan đến mã nguồn hoặc bộ test. Kết quả kiểm thử tự động không thay thế việc chạy thử giao diện trên Windows.
+
+**Lưu ý dữ liệu:** ứng dụng kiểm tra cấu trúc giao dịch và ngân sách khi đọc JSON; thao tác ghi sử dụng file tạm rồi thay thế file dữ liệu để giảm nguy cơ ghi dở dang. Nếu không lưu được, giao diện sẽ báo lỗi và hoàn tác thay đổi trong bộ nhớ. Bạn vẫn nên sao lưu file JSON trước khi thử nghiệm.
 
 ## 📌 Giới hạn hiện tại
 
@@ -339,7 +362,7 @@ Một số ý tưởng cho các lần cập nhật sau:
 - [ ] Xuất giao dịch hoặc báo cáo tháng ra CSV.
 - [ ] Thống kê chi tiêu theo từng danh mục.
 - [ ] Hiển thị biểu đồ thu chi theo tháng.
-- [ ] Thêm một vài kiểm thử tự động khi đã học đến phần kiểm thử.
+- [x] Bổ sung kiểm thử tự động cho xác thực dữ liệu và lưu JSON.
 - [ ] Nghiên cứu tích hợp Nanobot để hỗ trợ thao tác với sổ thu chi bằng ngôn ngữ tự nhiên.
 
 ## 🤖 Định hướng tích hợp Nanobot
