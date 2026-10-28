@@ -6,8 +6,9 @@ on:
     branches:
       - main
     paths:
-      - "gui.py"
-      - "SoThuChi.spec"
+      - "*.py"
+      - "requirements.txt"
+      - "README.md"
       - ".github/workflows/build-windows.yml"
 
 permissions:
@@ -25,8 +26,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install PyInstaller
-        run: python -m pip install --upgrade pip pyinstaller
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip pyinstaller
+          if (Test-Path "requirements.txt") {
+            python -m pip install -r requirements.txt
+          }
 
       - name: Build standalone desktop app
         run: >-
@@ -49,10 +55,39 @@ jobs:
           }
           $found | ForEach-Object { Write-Host $_.FullName }
 
-      - name: Package app as ZIP
+      - name: Prepare ZIP with app and source code
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist/SoThuChi" -DestinationPath "SoThuChi-Windows.zip" -Force
+          New-Item -ItemType Directory -Path "package/SoThuChi" -Force | Out-Null
+          New-Item -ItemType Directory -Path "package/SourceCode" -Force | Out-Null
+          Copy-Item -Path "dist/SoThuChi/*" -Destination "package/SoThuChi" -Recurse -Force
+
+          # Include Python source files only; never package personal transaction/budget data.
+          Get-ChildItem -Path "." -File -Filter "*.py" |
+            Where-Object { $_.Name -notin @("__init__.py") } |
+            Copy-Item -Destination "package/SourceCode" -Force
+
+          if (Test-Path "README.md") { Copy-Item "README.md" "package/README.md" -Force }
+          if (Test-Path "requirements.txt") { Copy-Item "requirements.txt" "package/SourceCode/requirements.txt" -Force }
+          @'
+          SO THU CHI - WINDOWS PORTABLE
+          
+          CHAY UNG DUNG:
+          1. Mo thu muc SoThuChi.
+          2. Nhan dup SoThuChi.exe.
+          3. Giu nguyen cac file va thu muc di kem trong SoThuChi.
+          
+          XEM MA NGUON:
+          - Mo thu muc SourceCode.
+          - Mo cac file .py bang VS Code hoac Notepad.
+          - De chay ma nguon, may can cai Python va cac thu vien trong requirements.txt (neu co).
+          
+          LUU Y:
+          - Ban EXE da dong goi va ma nguon la hai phan rieng.
+          - Khong dua du lieu thu chi ca nhan vao ZIP cong khai.
+          '@ | Set-Content -Path "package/README-PORTABLE.txt" -Encoding UTF8
+
+          Compress-Archive -Path "package/*" -DestinationPath "SoThuChi-Windows.zip" -Force
 
       - name: Upload downloadable ZIP
         uses: actions/upload-artifact@v4
