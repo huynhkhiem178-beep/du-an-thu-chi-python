@@ -683,7 +683,14 @@ class FinanceWindow:
             "kind": self.kind_var.get(), "amount": amount, "category": category,
             "day": transaction_day, "note": self.note_var.get().strip(),
         })
-        finance.save_transactions()
+        if not finance.save_transactions():
+            finance.transactions.pop()
+            messagebox.showerror(
+                "Không thể lưu dữ liệu",
+                "Giao dịch chưa được lưu vào file. Hãy kiểm tra quyền ghi thư mục rồi thử lại.",
+                parent=self.root,
+            )
+            return
         self.amount_var.set("")
         self.category_var.set("")
         self.note_var.set("")
@@ -790,13 +797,26 @@ class FinanceWindow:
                                          initialvalue=current, minvalue=0, parent=self.root)
         if amount is None:
             return
+        previous = finance.monthly_budgets.get(month)
         if amount == 0:
             finance.monthly_budgets.pop(month, None)
-            self.status_var.set(f"Đã tắt ngân sách tháng {month}.")
         else:
             finance.monthly_budgets[month] = amount
+        if not finance.save_budgets():
+            if previous is None:
+                finance.monthly_budgets.pop(month, None)
+            else:
+                finance.monthly_budgets[month] = previous
+            messagebox.showerror(
+                "Không thể lưu ngân sách",
+                "Ngân sách chưa được lưu vào file. Hãy kiểm tra quyền ghi thư mục rồi thử lại.",
+                parent=self.root,
+            )
+            return
+        if amount == 0:
+            self.status_var.set(f"Đã tắt ngân sách tháng {month}.")
+        else:
             self.status_var.set(f"Đã đặt ngân sách tháng {month}: {money(amount)}.")
-        finance.save_budgets()
         self.refresh_budget()
 
     def edit_selected(self):
@@ -859,6 +879,7 @@ class FinanceWindow:
                 messagebox.showerror("Ngày chưa hợp lệ", "Nhập ngày theo dạng YYYY-MM-DD.", parent=dialog)
                 return
 
+            previous = transaction.copy()
             transaction.update({
                 "kind": kind_var.get(),
                 "amount": amount,
@@ -866,7 +887,15 @@ class FinanceWindow:
                 "day": transaction_day,
                 "note": note_var.get().strip(),
             })
-            finance.save_transactions()
+            if not finance.save_transactions():
+                transaction.clear()
+                transaction.update(previous)
+                messagebox.showerror(
+                    "Không thể lưu dữ liệu",
+                    "Thay đổi chưa được lưu vào file. Hãy kiểm tra quyền ghi thư mục rồi thử lại.",
+                    parent=dialog,
+                )
+                return
             self.status_var.set("Đã cập nhật giao dịch.")
             dialog.destroy()
             self.refresh()
@@ -893,8 +922,15 @@ class FinanceWindow:
         description = f"{transaction.get('category', 'Giao dịch')} · {money(transaction.get('amount', 0))}"
         if not messagebox.askyesno("Xóa giao dịch", f"Bạn có chắc muốn xóa {description}?", parent=self.root):
             return
-        finance.transactions.pop(index)
-        finance.save_transactions()
+        deleted = finance.transactions.pop(index)
+        if not finance.save_transactions():
+            finance.transactions.insert(index, deleted)
+            messagebox.showerror(
+                "Không thể lưu dữ liệu",
+                "Giao dịch chưa bị xóa khỏi file. Hãy kiểm tra quyền ghi thư mục rồi thử lại.",
+                parent=self.root,
+            )
+            return
         self.status_var.set("Đã xóa giao dịch.")
         self.refresh()
 
