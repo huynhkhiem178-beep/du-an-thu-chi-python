@@ -388,6 +388,25 @@ Dự án đã có **bản kết nối thử nghiệm** với [Nanobot](https://g
 
 
 
+## 🧪 Nhật ký thử nghiệm Nanobot (04/11/2026)
+
+Đã thực hiện thử nghiệm Nanobot riêng trên Windows để chuẩn bị cho bước tích hợp sâu hơn với Sổ Thu Chi:
+
+- [x] Cài đặt Nanobot phiên bản 0.4.0 trong môi trường Python riêng.
+- [x] Cấu hình OpenRouter làm nhà cung cấp mô hình.
+- [x] Khởi động Nanobot Gateway thành công.
+- [x] Bật WebSocket channel và mở được giao diện WebUI local.
+- [x] Thử yêu cầu AI phân tích một câu tiếng Việt có cả giao dịch thu và chi; mô hình trả về hai giao dịch tách biệt cùng số tiền và danh mục dự kiến.
+- [ ] Kiểm thử kết nối từ cửa sổ Trợ lý AI bên trong ứng dụng Sổ Thu Chi.
+- [ ] Xây dựng và kiểm thử parser Python thực tế; kết quả AI trả về trong WebUI hiện mới là phân tích/đề xuất, chưa chứng minh ứng dụng đã thực thi parser.
+- [ ] Kết nối luồng xác nhận giao dịch với dữ liệu JSON hiện có.
+- [ ] Cài đặt và thử nghiệm Ollama để chạy mô hình local.
+
+**Lưu ý về trạng thái:** Nanobot Gateway và WebUI đã chạy được độc lập. Chưa có bằng chứng rằng câu lệnh thử nghiệm đã ghi dữ liệu vào `transactions.json` hoặc đã được xử lý bên trong GUI Sổ Thu Chi. Trong một lần thử tiếp theo, OpenRouter báo giới hạn tốc độ (rate limit), vì vậy khả năng sử dụng còn phụ thuộc hạn mức và tình trạng của nhà cung cấp mô hình.
+
+**Bảo mật:** Không commit API key, mật khẩu WebUI, file cấu hình chứa thông tin xác thực hoặc dữ liệu thu chi cá nhân lên repository. Các thông tin này chỉ nên lưu trong cấu hình local hoặc biến môi trường.
+
+---
 ## 🎤 Gợi ý trình bày
 
 Có thể demo giao diện theo thứ tự: thêm một khoản thu, thêm một khoản chi, lọc theo tháng, đặt ngân sách rồi xem cảnh báo trong tổng kết tháng. Sau đó khởi động lại ứng dụng để cho thấy dữ liệu vẫn được lưu. Khi giới thiệu code, có thể giải thích cách Tkinter nhận thao tác từ cửa sổ, cách list/dictionary giữ giao dịch và cách JSON lưu dữ liệu giữa các lần chạy.
