@@ -316,13 +316,16 @@ Các hàm chính trong `app.py`:
 ```
 .
 ├── app.py                   # Phiên bản terminal và lớp lưu dữ liệu
-├── gui.py                   # Giao diện desktop Tkinter
+├── gui.py                   # Giao diện desktop Tkinter, có cửa sổ trợ lý AI
+├── ai_assistant.py          # Tạo ngữ cảnh an toàn và gọi API Nanobot
 ├── sample_transactions.json # Bộ dữ liệu giả lập để thực hành
 ├── tests/
-│   └── test_app.py           # Kiểm thử tự động bằng pytest
-├── requirements-dev.txt     # Thư viện chỉ dùng khi phát triển
+│   ├── test_app.py
+│   └── test_ai_assistant.py
+├── requirements-dev.txt
 ├── docs/
-│   └── DEVELOPMENT.md       # Ghi chú phát triển và an toàn dữ liệu
+│   ├── DEVELOPMENT.md
+│   └── NANOBOT_INTEGRATION.md
 ├── .github/workflows/
 │   ├── build-windows.yml    # Đóng gói ứng dụng Windows
 │   └── tests.yml            # Chạy kiểm thử tự động
@@ -370,18 +373,19 @@ Một số ý tưởng cho các lần cập nhật sau:
 - [x] Bổ sung kiểm thử tự động cho xác thực dữ liệu và lưu JSON.
 - [ ] Nghiên cứu tích hợp Nanobot để hỗ trợ thao tác với sổ thu chi bằng ngôn ngữ tự nhiên.
 
-## 🤖 Định hướng tích hợp Nanobot
+## 🤖 Tích hợp trợ lý AI Nanobot
 
-Mình dự định nghiên cứu tích hợp [Nanobot](https://github.com/HKUDS/nanobot) với dự án Sổ Thu Chi để thử nghiệm cách dùng trợ lý AI hỗ trợ quản lý thu chi. Đây là **kế hoạch phát triển trong tương lai**, chưa phải tính năng đã hoàn thành.
+Dự án đã có **bản kết nối thử nghiệm** với [Nanobot](https://github.com/HKUDS/nanobot):
 
-Một số chức năng có thể xem xét:
+- [x] Thêm mô-đun `ai_assistant.py` để gửi câu hỏi đến API tương thích OpenAI của Nanobot.
+- [x] Thêm cửa sổ **Trợ lý AI** trong giao diện desktop.
+- [x] Cung cấp cho AI số tổng thu, tổng chi, số dư, chi theo danh mục và ngân sách.
+- [x] Không gửi ghi chú riêng hoặc nội dung từng giao dịch trong bản thử nghiệm.
+- [ ] Kiểm thử kết nối thực tế trên máy Windows đã cài và cấu hình Nanobot.
+- [ ] Nghiên cứu các thao tác có ghi dữ liệu; mọi thay đổi phải có xác nhận rõ ràng của người dùng.
 
-- [ ] Hỏi Nanobot về tổng thu, tổng chi và số dư theo tháng.
-- [ ] Yêu cầu xem các giao dịch theo ngày hoặc danh mục.
-- [ ] Hỗ trợ thêm giao dịch hoặc đặt ngân sách sau khi người dùng xác nhận.
-- [ ] Giữ dữ liệu thu chi trên máy, không tự ý gửi dữ liệu cá nhân đến dịch vụ bên ngoài.
+Đây là kết nối qua API local, không phải Nanobot đã được nhúng trực tiếp vào chương trình. Muốn dùng trợ lý, cần cài đặt, cấu hình mô hình AI và bật API của Nanobot trước. Xem [hướng dẫn tích hợp](docs/NANOBOT_INTEGRATION.md).
 
-Khi triển khai, cần thiết kế một lớp kết nối rõ ràng giữa Nanobot và ứng dụng Python, kiểm tra dữ liệu đầu vào và yêu cầu xác nhận trước khi ghi thay đổi vào sổ thu chi. Việc tích hợp cũng cần được kiểm thử riêng để tránh làm ảnh hưởng các chức năng hiện có.
 
 
 ## 🎤 Gợi ý trình bày
