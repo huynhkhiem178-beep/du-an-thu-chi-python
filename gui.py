@@ -468,11 +468,6 @@ class FinanceWindow:
         send_button = ttk.Button(entry_row, text="Gửi", style="Primary.TButton")
         send_button.grid(row=0, column=1, ipadx=12, ipady=3)
 
-        # Pack khung chat sau thanh trang thai va o nhap de no khong
-        # chiem het chieu cao cua cua so va che mat o nhap.
-        chat_area.pack_forget()
-        chat_area.pack(fill="both", expand=True)
-
         def send():
             message = question.get().strip()
             if not message:
