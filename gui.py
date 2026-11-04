@@ -397,9 +397,12 @@ class FinanceWindow:
         dialog.configure(bg=BG)
         dialog.transient(self.root)
 
-        # Thanh tiêu đề
+        # Dùng grid cho toàn bộ cửa sổ để cố định ô nhập ở hàng cuối.
+        dialog.columnconfigure(0, weight=1)
+        dialog.rowconfigure(1, weight=1)
+
         header = tk.Frame(dialog, bg=DEEP, padx=22, pady=16)
-        header.pack(fill="x")
+        header.grid(row=0, column=0, sticky="ew")
         tk.Label(
             header, text="Trợ lý AI", bg=DEEP, fg=INK,
             font=("Segoe UI", 21, "bold")
@@ -410,8 +413,8 @@ class FinanceWindow:
             bg=DEEP, fg=MUTED, font=("Segoe UI", 9)
         ).pack(anchor="w", pady=(3, 0))
 
-        chat_area = tk.Frame(dialog, bg=BG, padx=18, pady=14)
-        chat_area.pack(fill="both", expand=True)
+        chat_area = tk.Frame(dialog, bg=BG, padx=18, pady=12)
+        chat_area.grid(row=1, column=0, sticky="nsew")
         chat_area.rowconfigure(0, weight=1)
         chat_area.columnconfigure(0, weight=1)
 
@@ -432,9 +435,8 @@ class FinanceWindow:
         history.tag_configure("content", foreground=INK, font=("Segoe UI", 10))
 
         def append_message(role, content):
-            # Mỗi tin nhắn nằm trên một dòng; bỏ cả ký tự xuống dòng
-            # thực tế lẫn chuỗi escape literal \\n do model trả về.
-            clean = str(content).replace("\\n", " ").replace("\r", " ").replace("\n", " ")
+            # Gộp newline thật và chuỗi escape literal thành dấu cách.
+            clean = str(content).replace("\\\\n", " ").replace("\\r", " ").replace("\\n", " ")
             clean = " ".join(clean.split())
             role_tag = (
                 "user" if role == "Bạn" else
@@ -442,7 +444,7 @@ class FinanceWindow:
             )
             history.configure(state="normal")
             history.insert("end", f"{role}: ", role_tag)
-            history.insert("end", clean + "\n", "content")
+            history.insert("end", clean + "\\n", "content")
             history.see("end")
             history.configure(state="disabled")
 
@@ -457,10 +459,10 @@ class FinanceWindow:
             dialog, textvariable=status_var, bg=BG, fg=MUTED,
             font=("Segoe UI", 9), anchor="w", padx=20
         )
-        status.pack(fill="x", pady=(0, 6))
+        status.grid(row=2, column=0, sticky="ew", pady=(0, 4))
 
         entry_row = tk.Frame(dialog, bg=BG, padx=18, pady=(4, 16))
-        entry_row.pack(fill="x")
+        entry_row.grid(row=3, column=0, sticky="ew")
         entry_row.columnconfigure(0, weight=1)
         question = tk.StringVar()
         entry = ttk.Entry(entry_row, textvariable=question, font=("Segoe UI", 10))
@@ -503,6 +505,7 @@ class FinanceWindow:
         send_button.configure(command=send)
         entry.bind("<Return>", lambda _event: send())
         entry.focus_set()
+
     def _build_rating_page(self, parent):
         self.rating_page = ttk.Frame(parent, style="Card.TFrame", padding=28)
         self.rating_page.grid(row=0, column=0, columnspan=2, sticky="nsew")
