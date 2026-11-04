@@ -392,46 +392,81 @@ class FinanceWindow:
     def open_ai_assistant(self):
         dialog = tk.Toplevel(self.root)
         dialog.title("Trợ lý AI - Sổ Thu Chi")
-        dialog.geometry("720x560")
-        dialog.minsize(560, 420)
+        dialog.geometry("780x620")
+        dialog.minsize(620, 460)
         dialog.configure(bg=BG)
         dialog.transient(self.root)
 
-        ttk.Label(dialog, text="Trợ lý AI", style="Title.TLabel").pack(
-            anchor="w", padx=18, pady=(16, 4)
-        )
-        ttk.Label(
-            dialog,
-            text="AI chỉ nhận số liệu tổng hợp và danh mục chi; ghi chú riêng của bạn không được gửi.",
-            wraplength=670,
-        ).pack(anchor="w", padx=18, pady=(0, 10))
+        # Thanh tiêu đề
+        header = tk.Frame(dialog, bg=DEEP, padx=22, pady=16)
+        header.pack(fill="x")
+        tk.Label(
+            header, text="Trợ lý AI", bg=DEEP, fg=INK,
+            font=("Segoe UI", 21, "bold")
+        ).pack(anchor="w")
+        tk.Label(
+            header,
+            text="Hỏi về báo cáo, danh mục chi tiêu và cách lập ngân sách.",
+            bg=DEEP, fg=MUTED, font=("Segoe UI", 9)
+        ).pack(anchor="w", pady=(3, 0))
+
+        chat_area = tk.Frame(dialog, bg=BG, padx=18, pady=14)
+        chat_area.pack(fill="both", expand=True)
+        chat_area.rowconfigure(0, weight=1)
+        chat_area.columnconfigure(0, weight=1)
 
         history = tk.Text(
-            dialog, wrap="word", state="disabled", bg=CARD, fg=INK,
-            insertbackground=INK, font=("Segoe UI", 10), padx=12, pady=10,
+            chat_area, wrap="word", state="disabled",
+            bg=CARD, fg=INK, insertbackground=INK,
+            font=("Segoe UI", 10), padx=16, pady=14,
+            relief="flat", borderwidth=0, spacing1=5, spacing3=8,
         )
-        history.pack(fill="both", expand=True, padx=18, pady=(0, 12))
+        history.grid(row=0, column=0, sticky="nsew")
+        scrollbar = ttk.Scrollbar(chat_area, orient="vertical", command=history.yview)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        history.configure(yscrollcommand=scrollbar.set)
 
-        entry_row = ttk.Frame(dialog, padding=(18, 0, 18, 16))
-        entry_row.pack(fill="x")
-        entry_row.columnconfigure(0, weight=1)
-        question = tk.StringVar()
-        entry = ttk.Entry(entry_row, textvariable=question)
-        entry.grid(row=0, column=0, sticky="ew", padx=(0, 8))
-        send_button = ttk.Button(entry_row, text="Gửi", style="Primary.TButton")
-        send_button.grid(row=0, column=1)
+        history.tag_configure("user", foreground="#91c9aa", font=("Segoe UI", 10, "bold"))
+        history.tag_configure("assistant", foreground="#b9a9df", font=("Segoe UI", 10, "bold"))
+        history.tag_configure("system", foreground="#e6bd83", font=("Segoe UI", 10, "bold"))
+        history.tag_configure("content", foreground=INK, font=("Segoe UI", 10))
 
         def append_message(role, content):
+            # Mỗi tin nhắn nằm trên một dòng; bỏ cả ký tự xuống dòng
+            # thực tế lẫn chuỗi escape literal \\n do model trả về.
+            clean = str(content).replace("\\\\n", " ").replace("\\r", " ").replace("\\n", " ")
+            clean = " ".join(clean.split())
+            role_tag = (
+                "user" if role == "Bạn" else
+                "assistant" if role == "AI" else "system"
+            )
             history.configure(state="normal")
-            history.insert("end", f"{role}: {content.strip()}\\n\\n")
+            history.insert("end", f"{role}: ", role_tag)
+            history.insert("end", clean + "\\n", "content")
             history.see("end")
             history.configure(state="disabled")
 
         append_message(
             "Sổ Thu Chi",
-            "Xin chào! Bạn có thể hỏi: 'Tháng này tôi chi nhiều nhất ở danh mục nào?' "
-            "hoặc 'Hãy gợi ý cách lập ngân sách hợp lý.'",
+            "Xin chào! Bạn có thể hỏi về tổng thu, tổng chi, danh mục chi tiêu "
+            "hoặc cách lập ngân sách. Hãy nhập câu hỏi bên dưới.",
         )
+
+        status_var = tk.StringVar(value="Đang sẵn sàng")
+        status = tk.Label(
+            dialog, textvariable=status_var, bg=BG, fg=MUTED,
+            font=("Segoe UI", 9), anchor="w", padx=20
+        )
+        status.pack(fill="x", pady=(0, 6))
+
+        entry_row = tk.Frame(dialog, bg=BG, padx=18, pady=(4, 16))
+        entry_row.pack(fill="x")
+        entry_row.columnconfigure(0, weight=1)
+        question = tk.StringVar()
+        entry = ttk.Entry(entry_row, textvariable=question, font=("Segoe UI", 10))
+        entry.grid(row=0, column=0, sticky="ew", padx=(0, 9), ipady=7)
+        send_button = ttk.Button(entry_row, text="Gửi", style="Primary.TButton")
+        send_button.grid(row=0, column=1, ipadx=12, ipady=3)
 
         def send():
             message = question.get().strip()
@@ -439,7 +474,7 @@ class FinanceWindow:
                 return
             question.set("")
             append_message("Bạn", message)
-            append_message("Hệ thống", "Đang kết nối Nanobot...")
+            status_var.set("Đang kết nối Nanobot...")
             send_button.configure(state="disabled")
             entry.configure(state="disabled")
             context = ai_assistant.build_finance_context(
@@ -455,14 +490,8 @@ class FinanceWindow:
                 def finish():
                     if not dialog.winfo_exists():
                         return
-                    history.configure(state="normal")
-                    content = history.get("1.0", "end-1c")
-                    notice = "Hệ thống: Đang kết nối Nanobot...\\n\\n"
-                    position = content.rfind(notice)
-                    if position >= 0:
-                        history.delete(f"1.0+{position}c", f"1.0+{position + len(notice)}c")
-                    history.configure(state="disabled")
                     append_message(*result)
+                    status_var.set("Đã nhận phản hồi" if result[0] == "AI" else "Không thể kết nối")
                     send_button.configure(state="normal")
                     entry.configure(state="normal")
                     entry.focus_set()
@@ -474,7 +503,6 @@ class FinanceWindow:
         send_button.configure(command=send)
         entry.bind("<Return>", lambda _event: send())
         entry.focus_set()
-
     def _build_rating_page(self, parent):
         self.rating_page = ttk.Frame(parent, style="Card.TFrame", padding=28)
         self.rating_page.grid(row=0, column=0, columnspan=2, sticky="nsew")
