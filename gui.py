@@ -176,7 +176,7 @@ class FinanceWindow:
         self.home_panel = ttk.Frame(self.root, padding=(26, 22))
         self.home_panel.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.home_panel.columnconfigure(0, weight=1)
-        self.home_panel.columnconfigure(1, weight=1)
+        self.home_panel.columnconfigure(1, weight=1, minsize=500)
 
         hero = ttk.Frame(self.home_panel, style="LobbyHero.TFrame", padding=(24, 16))
         hero.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 18))
@@ -216,10 +216,11 @@ class FinanceWindow:
 
         right = ttk.Frame(self.home_panel, style="Card.TFrame", padding=18)
         right.grid(row=1, column=1, sticky="nsew", padx=(10, 0))
-        right.columnconfigure(0, weight=1)
-        right.columnconfigure(1, weight=1)
+        # Bố trí 3 cột để cả 5 chức năng hiển thị gọn trong 2 hàng.
+        for action_column in range(3):
+            right.columnconfigure(action_column, weight=1, uniform="home_action")
         ttk.Label(right, text="Chọn chức năng", style="Metric.TLabel").grid(
-            row=0, column=0, columnspan=2, sticky="w", pady=(0, 12)
+            row=0, column=0, columnspan=3, sticky="w", pady=(0, 12)
         )
         self._home_action(right, 0, "＋", "Thêm giao dịch", "Ghi khoản thu hoặc chi.",
                           "Primary.TButton", self.open_add_transaction)
@@ -242,14 +243,14 @@ class FinanceWindow:
 
     def _home_action(self, parent, column, icon, title, description, button_style, command):
         card = ttk.Frame(parent, style="LobbyCard.TFrame", padding=14)
-        card.grid(row=1 + column // 2, column=column % 2, sticky="nsew",
-                  padx=(0 if column % 2 == 0 else 7, 7 if column % 2 == 0 else 0),
-                  pady=(0 if column < 2 else 8, 4))
+        card.grid(row=1 + column // 3, column=column % 3, sticky="nsew",
+                  padx=(0 if column % 3 == 0 else 5, 5 if column % 3 != 2 else 0),
+                  pady=(0 if column < 3 else 8, 4))
         icon_canvas = tk.Canvas(card, width=42, height=42, bg=CARD, highlightthickness=0)
         icon_canvas.pack(anchor="w")
         self._draw_home_icon(icon_canvas, column)
         ttk.Label(card, text=title, style="LobbyCardTitle.TLabel", font=("Segoe UI", 11, "bold")).pack(anchor="w", pady=(4, 2))
-        ttk.Label(card, text=description, style="LobbyCardText.TLabel", wraplength=190).pack(anchor="w", pady=(0, 9))
+        ttk.Label(card, text=description, style="LobbyCardText.TLabel", wraplength=135).pack(anchor="w", pady=(0, 8))
         ttk.Button(card, text="Mở", style=button_style, command=command).pack(fill="x")
 
     @staticmethod
