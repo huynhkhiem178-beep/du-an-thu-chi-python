@@ -400,6 +400,8 @@ class FinanceWindow:
         # Dùng grid cho toàn bộ cửa sổ để cố định ô nhập ở hàng cuối.
         dialog.columnconfigure(0, weight=1)
         dialog.rowconfigure(1, weight=1)
+        dialog.rowconfigure(2, minsize=28)
+        dialog.rowconfigure(3, minsize=58)
 
         header = tk.Frame(dialog, bg=DEEP, padx=22, pady=16)
         header.grid(row=0, column=0, sticky="ew")
@@ -436,7 +438,7 @@ class FinanceWindow:
 
         def append_message(role, content):
             # Gộp newline thật và chuỗi escape literal thành dấu cách.
-            clean = str(content).replace("\\\\n", " ").replace("\\r", " ").replace("\\n", " ")
+            clean = str(content).replace("\\n", " ").replace("\r", " ").replace("\n", " ")
             clean = " ".join(clean.split())
             role_tag = (
                 "user" if role == "Bạn" else
@@ -444,7 +446,7 @@ class FinanceWindow:
             )
             history.configure(state="normal")
             history.insert("end", f"{role}: ", role_tag)
-            history.insert("end", clean + "\\n", "content")
+            history.insert("end", clean + "\n", "content")
             history.see("end")
             history.configure(state="disabled")
 
