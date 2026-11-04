@@ -293,6 +293,7 @@ class FinanceWindow:
             ("#263438", BLUE),
             ("#302d3b", PURPLE),
             ("#39292d", RED),
+            ("#302d3b", PURPLE),  # Trợ lý AI
         )
         background, accent = palettes[kind]
         canvas.create_polygon(10, 2, 32, 2, 41, 21, 32, 40, 10, 40, 1, 21,
