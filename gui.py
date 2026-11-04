@@ -449,8 +449,8 @@ class FinanceWindow:
 
         def append_message(role, content):
             # Xóa cả newline thật và chuỗi escape do mô hình trả về.
-            clean = str(content)
-            clean = clean.replace("\\\\\\\\n", " ").replace("\\\\n", " ")
+            clean = str(content).replace("\\n", " ").replace("\\r", " ").replace("\n", " ")
+            clean = " ".join(clean.split())
             clean = clean.replace("\\r", " ").replace("\\n", " ")
             clean = " ".join(clean.split())
             role_tag = (
@@ -459,7 +459,7 @@ class FinanceWindow:
             )
             history.configure(state="normal")
             history.insert("end", f"{role}: ", role_tag)
-            history.insert("end", clean + "\\n", "content")
+            history.insert("end", clean + "\n", "content")
             history.see("end")
             history.configure(state="disabled")
 
