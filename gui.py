@@ -434,7 +434,7 @@ class FinanceWindow:
         def append_message(role, content):
             # Mỗi tin nhắn nằm trên một dòng; bỏ cả ký tự xuống dòng
             # thực tế lẫn chuỗi escape literal \\n do model trả về.
-            clean = str(content).replace("\\\\n", " ").replace("\\r", " ").replace("\\n", " ")
+            clean = str(content).replace("\\n", " ").replace("\r", " ").replace("\n", " ")
             clean = " ".join(clean.split())
             role_tag = (
                 "user" if role == "Bạn" else
@@ -442,7 +442,7 @@ class FinanceWindow:
             )
             history.configure(state="normal")
             history.insert("end", f"{role}: ", role_tag)
-            history.insert("end", clean + "\\n", "content")
+            history.insert("end", clean + "\n", "content")
             history.see("end")
             history.configure(state="disabled")
 
