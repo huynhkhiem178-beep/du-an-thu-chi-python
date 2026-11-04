@@ -320,12 +320,12 @@ Các hàm chính trong `app.py`:
 ├── ai_assistant.py          # Tạo ngữ cảnh an toàn và gọi API Nanobot
 ├── sample_transactions.json # Bộ dữ liệu giả lập để thực hành
 ├── tests/
-│   ├── test_app.py           # Kiểm thử dữ liệu và lưu JSON
-│   └── test_ai_assistant.py   # Kiểm thử phần trợ lý AI
-├── requirements-dev.txt     # Thư viện chỉ dùng khi phát triển
+│   ├── test_app.py
+│   └── test_ai_assistant.py
+├── requirements-dev.txt
 ├── docs/
-│   ├── DEVELOPMENT.md       # Ghi chú phát triển và an toàn dữ liệu
-│   └── NANOBOT_INTEGRATION.md # Hướng dẫn kết nối Nanobot
+│   ├── DEVELOPMENT.md
+│   └── NANOBOT_INTEGRATION.md
 ├── .github/workflows/
 │   ├── build-windows.yml    # Đóng gói ứng dụng Windows
 │   └── tests.yml            # Chạy kiểm thử tự động
