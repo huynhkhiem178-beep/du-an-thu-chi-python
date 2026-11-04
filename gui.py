@@ -397,14 +397,9 @@ class FinanceWindow:
         dialog.configure(bg=BG)
         dialog.transient(self.root)
 
-        # Dùng grid cho toàn bộ cửa sổ để cố định ô nhập ở hàng cuối.
-        dialog.columnconfigure(0, weight=1)
-        dialog.rowconfigure(1, weight=1)
-        dialog.rowconfigure(2, minsize=28)
-        dialog.rowconfigure(3, minsize=58)
-
+        # Cố định phần nhập ở đáy cửa sổ trước, lịch sử chat tự giãn ở giữa.
         header = tk.Frame(dialog, bg=DEEP, padx=22, pady=16)
-        header.grid(row=0, column=0, sticky="ew")
+        header.pack(side="top", fill="x")
         tk.Label(
             header, text="Trợ lý AI", bg=DEEP, fg=INK,
             font=("Segoe UI", 21, "bold")
@@ -415,8 +410,24 @@ class FinanceWindow:
             bg=DEEP, fg=MUTED, font=("Segoe UI", 9)
         ).pack(anchor="w", pady=(3, 0))
 
+        status_var = tk.StringVar(value="Đang sẵn sàng")
+        status = tk.Label(
+            dialog, textvariable=status_var, bg=BG, fg=MUTED,
+            font=("Segoe UI", 9), anchor="w", padx=20
+        )
+        status.pack(side="bottom", fill="x", pady=(0, 4))
+
+        entry_row = tk.Frame(dialog, bg=BG, padx=18, pady=10)
+        entry_row.pack(side="bottom", fill="x")
+        entry_row.columnconfigure(0, weight=1)
+        question = tk.StringVar()
+        entry = ttk.Entry(entry_row, textvariable=question, font=("Segoe UI", 10))
+        entry.grid(row=0, column=0, sticky="ew", padx=(0, 9), ipady=7)
+        send_button = ttk.Button(entry_row, text="Gửi", style="Primary.TButton")
+        send_button.grid(row=0, column=1, ipadx=12, ipady=3)
+
         chat_area = tk.Frame(dialog, bg=BG, padx=18, pady=12)
-        chat_area.grid(row=1, column=0, sticky="nsew")
+        chat_area.pack(side="top", fill="both", expand=True)
         chat_area.rowconfigure(0, weight=1)
         chat_area.columnconfigure(0, weight=1)
 
@@ -437,8 +448,10 @@ class FinanceWindow:
         history.tag_configure("content", foreground=INK, font=("Segoe UI", 10))
 
         def append_message(role, content):
-            # Gộp newline thật và chuỗi escape literal thành dấu cách.
-            clean = str(content).replace("\\n", " ").replace("\r", " ").replace("\n", " ")
+            # Xóa cả newline thật và chuỗi escape do mô hình trả về.
+            clean = str(content)
+            clean = clean.replace("\\\\\\\\n", " ").replace("\\\\n", " ")
+            clean = clean.replace("\\r", " ").replace("\\n", " ")
             clean = " ".join(clean.split())
             role_tag = (
                 "user" if role == "Bạn" else
@@ -446,7 +459,7 @@ class FinanceWindow:
             )
             history.configure(state="normal")
             history.insert("end", f"{role}: ", role_tag)
-            history.insert("end", clean + "\n", "content")
+            history.insert("end", clean + "\\n", "content")
             history.see("end")
             history.configure(state="disabled")
 
@@ -455,22 +468,6 @@ class FinanceWindow:
             "Xin chào! Bạn có thể hỏi về tổng thu, tổng chi, danh mục chi tiêu "
             "hoặc cách lập ngân sách. Hãy nhập câu hỏi bên dưới.",
         )
-
-        status_var = tk.StringVar(value="Đang sẵn sàng")
-        status = tk.Label(
-            dialog, textvariable=status_var, bg=BG, fg=MUTED,
-            font=("Segoe UI", 9), anchor="w", padx=20
-        )
-        status.grid(row=2, column=0, sticky="ew", pady=(0, 4))
-
-        entry_row = tk.Frame(dialog, bg=BG, padx=18, pady=(4, 16))
-        entry_row.grid(row=3, column=0, sticky="ew")
-        entry_row.columnconfigure(0, weight=1)
-        question = tk.StringVar()
-        entry = ttk.Entry(entry_row, textvariable=question, font=("Segoe UI", 10))
-        entry.grid(row=0, column=0, sticky="ew", padx=(0, 9), ipady=7)
-        send_button = ttk.Button(entry_row, text="Gửi", style="Primary.TButton")
-        send_button.grid(row=0, column=1, ipadx=12, ipady=3)
 
         def send():
             message = question.get().strip()
